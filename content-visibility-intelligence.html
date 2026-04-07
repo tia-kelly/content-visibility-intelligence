@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Content Visibility Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wdth,wght@0,75..100,300..700;1,75..100,300..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg:        #F5E2CE;
+    --sand:      #DFBC94;
+    --amber:     #E5A657;
+    --red:       #B53324;
+    --blue:      #88B8CE;
+    --text:      #1a1008;
+    --text-muted:#5a4030;
+    --border:    #1a1008;
+    --card-bg:   #fdf3e7;
+    --up:        #2d7a3a;
+    --down:      #B53324;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Instrument Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--text);
+    color: #F5E2CE;
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--border);
+  }
+
+  .header-left h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 26px;
+    font-weight: 400;
+    letter-spacing: -0.3px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .live-badge {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--amber);
+    background: transparent;
+    border: 1.5px solid var(--amber);
+    border-radius: 20px;
+    padding: 2px 8px;
+    text-transform: uppercase;
+  }
+
+  .header-left p {
+    font-size: 12px;
+    color: var(--sand);
+    margin-top: 3px;
+    letter-spacing: 0.3px;
+  }
+
+  .header-right {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: #F5E2CE;
+    border: 1.5px solid var(--sand);
+    border-radius: 6px;
+    padding: 6px 14px;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 32px 24px;
+  }
+
+  /* ── SECTION WRAPPER ── */
+  .section {
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--card-bg);
+    padding: 28px;
+    margin-bottom: 28px;
+  }
+
+  .section-header {
+    margin-bottom: 22px;
+  }
+
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 22px;
+    background: var(--amber);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .section-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    margin-left: 14px;
+  }
+
+  /* ── KPI CARDS ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .kpi-card {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 18px 20px;
+    position: relative;
+  }
+
+  .kpi-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .kpi-icon {
+    font-size: 14px;
+    opacity: 0.5;
+  }
+
+  .kpi-value {
+    font-family: 'Instrument Serif', serif;
+    font-size: 32px;
+    font-weight: 400;
+    letter-spacing: -1px;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .kpi-delta {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .kpi-delta.up   { color: var(--up); }
+  .kpi-delta.down { color: var(--down); }
+
+  .kpi-note {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  /* ── CHART ROW ── */
+  .chart-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .chart-card {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    padding: 20px;
+  }
+
+  .chart-card-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px;
+    font-weight: 400;
+    margin-bottom: 2px;
+  }
+
+  .chart-card-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .chart-wrap {
+    position: relative;
+    height: 220px;
+  }
+
+  /* ── TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead tr {
+    border-bottom: 2px solid var(--border);
+  }
+
+  thead th {
+    text-align: left;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 12px 10px 0;
+  }
+
+  thead th:last-child { text-align: right; padding-right: 0; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--sand);
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+
+  tbody td {
+    padding: 12px 12px 12px 0;
+    vertical-align: middle;
+  }
+
+  tbody td:last-child { text-align: right; padding-right: 0; }
+
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1.5px solid;
+  }
+
+  .tag-case-study  { color: var(--blue);  border-color: var(--blue);  background: rgba(136,184,206,0.12); }
+  .tag-landing-page{ color: var(--amber); border-color: var(--amber); background: rgba(229,166,87,0.12); }
+  .tag-whitepaper  { color: #9b59b6;      border-color: #9b59b6;      background: rgba(155,89,182,0.12); }
+  .tag-blog        { color: var(--blue);  border-color: var(--blue);  background: rgba(136,184,206,0.12); }
+
+  .trend-up   { color: var(--up);   font-weight: 600; }
+  .trend-down { color: var(--down); font-weight: 600; }
+
+  /* ── AI RESPONSE LOG ── */
+  .log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .log-item {
+    border-bottom: 1px solid var(--sand);
+    padding: 18px 0;
+  }
+
+  .log-item:last-child { border-bottom: none; }
+
+  .log-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .log-prompt {
+    font-family: 'Instrument Serif', serif;
+    font-size: 15px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .log-prompt::before {
+    content: '💬';
+    font-size: 13px;
+    opacity: 0.5;
+    flex-shrink: 0;
+  }
+
+  .log-meta-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .model-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    border: 1.5px solid;
+  }
+
+  .model-gpt    { color: #2d7a3a; border-color: #2d7a3a; background: rgba(45,122,58,0.1); }
+  .model-gemini { color: #5b52d8; border-color: #5b52d8; background: rgba(91,82,216,0.1); }
+  .model-claude { color: #7c4daa; border-color: #7c4daa; background: rgba(124,77,170,0.1); }
+
+  .status-icon { font-size: 16px; }
+
+  .log-excerpt {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    margin-left: 22px;
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .log-stats {
+    margin-top: 6px;
+    margin-left: 22px;
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .log-stats span strong { font-weight: 700; }
+  .stat-green { color: var(--up); font-weight: 700; }
+  .stat-amber { color: #b37800; font-weight: 700; }
+  .stat-red   { color: var(--down); font-weight: 700; }
+
+  /* ── DONUT LEGEND ── */
+  .donut-wrap {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .donut-chart-container {
+    width: 180px;
+    height: 180px;
+    flex-shrink: 0;
+  }
+
+  .donut-legend {
+    flex: 1;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 0;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .legend-item:last-child { border-bottom: none; }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  .legend-name { display: flex; align-items: center; flex: 1; }
+  .legend-pct  { font-weight: 700; font-size: 13px; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 20px 24px;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1.5px solid var(--sand);
+    margin-top: 8px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .kpi-grid  { grid-template-columns: 1fr 1fr; }
+    .chart-row { grid-template-columns: 1fr; }
+    .donut-wrap { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-left">
+    <h1>Content Visibility Intelligence <span class="live-badge">Live</span></h1>
+    <p>Content &amp; AI Visibility Dashboard — April 2026</p>
+  </div>
+  <div class="header-right">DataFlow Inc.</div>
+</header>
+
+<main>
+
+  <!-- ════════════════════════════════════════════
+       SECTION 1: Content Performance
+  ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Content Performance</div>
+      <div class="section-subtitle">How is our content performing?</div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Total Views <span class="kpi-icon">📄</span></div>
+        <div class="kpi-value">70.1K <span class="kpi-delta up">↑ 14.2%</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Avg Engagement <span class="kpi-icon">↗</span></div>
+        <div class="kpi-value">6.4% <span class="kpi-delta up">↑ 8.5%</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Pipeline Influenced <span class="kpi-icon">$</span></div>
+        <div class="kpi-value">$3.4M <span class="kpi-delta up">↑ 32.1%</span></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Decaying Assets <span class="kpi-icon">⚠</span></div>
+        <div class="kpi-value">3</div>
+        <div class="kpi-note">Losing &gt;5% traffic/mo</div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="chart-row">
+      <div class="chart-card">
+        <div class="chart-card-title">Views &amp; Pipeline Over Time</div>
+        <div class="chart-card-sub">6-month trend</div>
+        <div class="chart-wrap">
+          <canvas id="lineChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Topic Cluster × Buyer Stage</div>
+        <div class="chart-card-sub">Views by stage</div>
+        <div class="chart-wrap">
+          <canvas id="barChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SECTION 2: Content Library
+  ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">Content Library</div>
+      <div class="section-subtitle">Sorted by pipeline influence</div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Asset</th>
+          <th>Type</th>
+          <th>Stage</th>
+          <th>Views</th>
+          <th>Trend</th>
+          <th>Engagement</th>
+          <th style="text-align:right">Pipeline</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>GlobalBank Migration Case Study</td>
+          <td><span class="tag tag-case-study">CASE-STUDY</span></td>
+          <td>BOFU</td><td>2.8K</td>
+          <td class="trend-up">↑ 45.2%</td><td>9.3%</td><td>$1200K</td>
+        </tr>
+        <tr>
+          <td>ROI Calculator for Data Platforms</td>
+          <td><span class="tag tag-landing-page">LANDING-PAGE</span></td>
+          <td>BOFU</td><td>4.7K</td>
+          <td class="trend-up">↑ 5.1%</td><td>11.2%</td><td>$890K</td>
+        </tr>
+        <tr>
+          <td>Pricing &amp; Packaging Guide</td>
+          <td><span class="tag tag-landing-page">LANDING-PAGE</span></td>
+          <td>BOFU</td><td>9.4K</td>
+          <td class="trend-down">↓ 2.3%</td><td>7.6%</td><td>$540K</td>
+        </tr>
+        <tr>
+          <td>How Acme Corp Reduced Data Latency by 73%</td>
+          <td><span class="tag tag-case-study">CASE-STUDY</span></td>
+          <td>BOFU</td><td>3.2K</td>
+          <td class="trend-up">↑ 12.5%</td><td>8.7%</td><td>$420K</td>
+        </tr>
+        <tr>
+          <td>Enterprise API Strategy Guide 2026</td>
+          <td><span class="tag tag-whitepaper">WHITEPAPER</span></td>
+          <td>MOFU</td><td>8.9K</td>
+          <td class="trend-up">↑ 22.3%</td><td>6.1%</td><td>$185K</td>
+        </tr>
+        <tr>
+          <td>Platform Comparison: Build vs. Buy</td>
+          <td><span class="tag tag-blog">BLOG</span></td>
+          <td>MOFU</td><td>6.1K</td>
+          <td class="trend-down">↓ 15.4%</td><td>3.8%</td><td>$92K</td>
+        </tr>
+        <tr>
+          <td>Security &amp; Compliance in Cloud Data</td>
+          <td><span class="tag tag-whitepaper">WHITEPAPER</span></td>
+          <td>MOFU</td><td>5.3K</td>
+          <td class="trend-up">↑ 3.7%</td><td>5.4%</td><td>$67K</td>
+        </tr>
+        <tr>
+          <td>The Future of Enterprise Data Integration</td>
+          <td><span class="tag tag-blog">BLOG</span></td>
+          <td>TOFU</td><td>12.4K</td>
+          <td class="trend-down">↓ 8.2%</td><td>4.2%</td><td>—</td>
+        </tr>
+        <tr>
+          <td>5 Signs Your Data Stack Is Holding You Back</td>
+          <td><span class="tag tag-blog">BLOG</span></td>
+          <td>TOFU</td><td>2.1K</td>
+          <td class="trend-down">↓ 32.1%</td><td>2.1%</td><td>—</td>
+        </tr>
+        <tr>
+          <td>Getting Started with Real-Time Pipelines</td>
+          <td><span class="tag tag-blog">BLOG</span></td>
+          <td>TOFU</td><td>15.2K</td>
+          <td class="trend-up">↑ 67.8%</td><td>5.8%</td><td>—</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SECTION 3: AI Search Visibility
+  ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">AI Search Visibility</div>
+      <div class="section-subtitle">What is AI telling the market about us?</div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Mention Rate <span class="kpi-icon">👁</span></div>
+        <div class="kpi-value">75% <span class="kpi-delta up">↑ 11.3%</span></div>
+        <div class="kpi-note">6/8 prompts</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Avg Sentiment <span class="kpi-icon">👍</span></div>
+        <div class="kpi-value">0.74 <span class="kpi-delta up">↑ 5.2%</span></div>
+        <div class="kpi-note">Scale: -1 to 1</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Position Accuracy <span class="kpi-icon">🎯</span></div>
+        <div class="kpi-value">80% <span class="kpi-delta up">↑ 3.8%</span></div>
+        <div class="kpi-note">Is AI describing us correctly?</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-label">Share of Voice <span class="kpi-icon">📊</span></div>
+        <div class="kpi-value">29% <span class="kpi-delta up">↑ 7.1%</span></div>
+        <div class="kpi-note">vs. named competitors</div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="chart-row">
+      <div class="chart-card">
+        <div class="chart-card-title">Visibility Trends</div>
+        <div class="chart-card-sub">Weekly mention rate &amp; sentiment</div>
+        <div class="chart-wrap">
+          <canvas id="visibilityChart"></canvas>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-card-title">Share of Voice</div>
+        <div class="chart-card-sub">AI-generated mentions vs. competitors</div>
+        <div class="donut-wrap" style="height:220px">
+          <div class="donut-chart-container">
+            <canvas id="donutChart"></canvas>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-item">
+              <span class="legend-name"><span class="legend-dot" style="background:#88B8CE"></span>DataFlow (You)</span>
+              <span class="legend-pct">29%</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-name"><span class="legend-dot" style="background:#6baed6"></span>Fivetran</span>
+              <span class="legend-pct">24%</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-name"><span class="legend-dot" style="background:#9b59b6"></span>Informatica</span>
+              <span class="legend-pct">19%</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-name"><span class="legend-dot" style="background:#E5A657"></span>Talend</span>
+              <span class="legend-pct">15%</span>
+            </div>
+            <div class="legend-item">
+              <span class="legend-name"><span class="legend-dot" style="background:#DFBC94"></span>Others</span>
+              <span class="legend-pct">13%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SECTION 4: AI Response Log
+  ════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-title">AI Response Log</div>
+      <div class="section-subtitle">Recent prompt submissions &amp; results</div>
+    </div>
+
+    <div class="log-list">
+
+      <div class="log-item">
+        <div class="log-top">
+          <div class="log-prompt">What are the best enterprise data integration platforms?</div>
+          <div class="log-meta-right">
+            <span class="model-badge model-gpt">GPT-5</span>
+            <span class="status-icon">✅</span>
+          </div>
+        </div>
+        <div class="log-excerpt">...is a strong contender in enterprise data integration, known for real-time pipeline capabilities and robust security compliance...</div>
+        <div class="log-stats">
+          <span>Sentiment: <strong class="stat-green">0.82</strong></span>
+          <span>Accuracy: <strong class="stat-green">88%</strong></span>
+          <span>Rank: <strong>#2</strong></span>
+          <span>vs. Fivetran, Informatica, Talend</span>
+        </div>
+      </div>
+
+      <div class="log-item">
+        <div class="log-top">
+          <div class="log-prompt">Compare DataFlow vs Fivetran for enterprise use</div>
+          <div class="log-meta-right">
+            <span class="model-badge model-gemini">GEMINI PRO</span>
+            <span class="status-icon">✅</span>
+          </div>
+        </div>
+        <div class="log-excerpt">Both platforms offer robust ETL capabilities. DataFlow excels in real-time processing while Fivetran has broader connector coverage...</div>
+        <div class="log-stats">
+          <span>Sentiment: <strong class="stat-amber">0.65</strong></span>
+          <span>Accuracy: <strong class="stat-amber">72%</strong></span>
+          <span>vs. Fivetran</span>
+        </div>
+      </div>
+
+      <div class="log-item">
+        <div class="log-top">
+          <div class="log-prompt">Best tools for real-time data pipelines</div>
+          <div class="log-meta-right">
+            <span class="model-badge model-gpt">GPT-5</span>
+            <span class="status-icon">✅</span>
+          </div>
+        </div>
+        <div class="log-excerpt">DataFlow stands out as the leading platform for real-time data pipelines, offering sub-second latency and enterprise-grade reliability...</div>
+        <div class="log-stats">
+          <span>Sentiment: <strong class="stat-green">0.91</strong></span>
+          <span>Accuracy: <strong class="stat-green">95%</strong></span>
+          <span>Rank: <strong>#1</strong></span>
+          <span>vs. Apache Kafka, Confluent, Striim</span>
+        </div>
+      </div>
+
+      <div class="log-item">
+        <div class="log-top">
+          <div class="log-prompt">What is the most cost-effective data platform?</div>
+          <div class="log-meta-right">
+            <span class="model-badge model-claude">CLAUDE</span>
+            <span class="status-icon">❌</span>
+          </div>
+        </div>
+        <div class="log-excerpt">For cost-effectiveness, open-source solutions like Airbyte and managed services like Stitch tend to offer better pricing...</div>
+        <div class="log-stats">
+          <span>Sentiment: <strong class="stat-amber">0.45</strong></span>
+          <span>Accuracy: <strong class="stat-amber">55%</strong></span>
+        </div>
+      </div>
+
+      <div class="log-item">
+        <div class="log-top">
+          <div class="log-prompt">Enterprise data integration security features</div>
+          <div class="log-meta-right">
+            <span class="model-badge model-gemini">GEMINI PRO</span>
+            <span class="status-icon">✅</span>
+          </div>
+        </div>
+        <div class="log-excerpt">DataFlow provides SOC 2 Type II compliance, end-to-end encryption, and role-based access controls suitable for enterprise environments...</div>
+        <div class="log-stats">
+          <span>Sentiment: <strong class="stat-green">0.73</strong></span>
+          <span>Accuracy: <strong class="stat-green">80%</strong></span>
+          <span>Rank: <strong>#3</strong></span>
+          <span>vs. Informatica, IBM DataStage, Talend</span>
+        </div>
+      </div>
+
+      <div class="log-item">
+        <div class="log-top">
+          <div class="log-prompt">Best data migration tools 2026</div>
+          <div class="log-meta-right">
+            <span class="model-badge model-gpt">GPT-5</span>
+            <span class="status-icon">✅</span>
+          </div>
+        </div>
+        <div class="log-excerpt">DataFlow offers migration capabilities, though it's primarily known for its real-time integration rather than batch migration...</div>
+        <div class="log-stats">
+          <span>Sentiment: <strong class="stat-amber">0.45</strong></span>
+          <span>Accuracy: <strong class="stat-amber">55%</strong></span>
+          <span>Rank: <strong>#5</strong></span>
+          <span>vs. AWS DMS, Azure Migrate, Fivetran, Informatica</span>
+        </div>
+      </div>
+
+      <div class="log-item">
+        <div class="log-top">
+          <div class="log-prompt">Top API management platforms</div>
+          <div class="log-meta-right">
+            <span class="model-badge model-claude">CLAUDE</span>
+            <span class="status-icon">❌</span>
+          </div>
+        </div>
+        <div class="log-excerpt">For API management, dedicated platforms like Kong and Apigee dominate the market...</div>
+        <div class="log-stats">
+          <span>No rank data available</span>
+        </div>
+      </div>
+
+      <div class="log-item">
+        <div class="log-top">
+          <div class="log-prompt">DataFlow platform review</div>
+          <div class="log-meta-right">
+            <span class="model-badge model-gpt">GPT-5</span>
+            <span class="status-icon">✅</span>
+          </div>
+        </div>
+        <div class="log-excerpt">DataFlow is a comprehensive data integration platform that excels in real-time processing. Key strengths include low latency, intuitive UI...</div>
+        <div class="log-stats">
+          <span>Sentiment: <strong class="stat-green">0.88</strong></span>
+          <span>Accuracy: <strong class="stat-green">92%</strong></span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  Mock data for demonstration purposes — Built by Tia Kelly
+</footer>
+
+<script>
+// ── Shared palette
+const amber  = '#E5A657';
+const blue   = '#88B8CE';
+const red    = '#B53324';
+const sand   = '#DFBC94';
+const dark   = '#1a1008';
+const muted  = '#5a4030';
+
+// ── Helper: default chart options
+const baseOptions = (extra = {}) => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: '#1a1008',
+      titleColor: '#F5E2CE',
+      bodyColor: '#DFBC94',
+      borderColor: '#DFBC94',
+      borderWidth: 1,
+    }
+  },
+  ...extra
+});
+
+// ── 1. Line Chart: Views & Pipeline Over Time
+(function() {
+  const labels = ['Oct','Nov','Dec','Jan','Feb','Mar'];
+  const ctx = document.getElementById('lineChart').getContext('2d');
+
+  // Gradient for area fill
+  const grad = ctx.createLinearGradient(0, 0, 0, 220);
+  grad.addColorStop(0, 'rgba(136,184,206,0.35)');
+  grad.addColorStop(1, 'rgba(136,184,206,0)');
+
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Views',
+          data: [40000, 37000, 42000, 48000, 58000, 70100],
+          borderColor: blue,
+          backgroundColor: grad,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 3,
+          pointBackgroundColor: blue,
+          yAxisID: 'y',
+        },
+        {
+          label: 'Pipeline',
+          data: [200000, 280000, 420000, 650000, 900000, 1200000],
+          borderColor: amber,
+          backgroundColor: 'transparent',
+          fill: false,
+          tension: 0.4,
+          pointRadius: 3,
+          pointBackgroundColor: amber,
+          yAxisID: 'y2',
+        }
+      ]
+    },
+    options: {
+      ...baseOptions(),
+      scales: {
+        x: {
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          ticks: { color: muted, font: { family: 'Instrument Sans', size: 11 } }
+        },
+        y: {
+          position: 'left',
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          ticks: {
+            color: muted,
+            font: { family: 'Instrument Sans', size: 11 },
+            callback: v => v >= 1000 ? (v/1000)+'K' : v
+          }
+        },
+        y2: {
+          position: 'right',
+          grid: { drawOnChartArea: false },
+          ticks: {
+            color: muted,
+            font: { family: 'Instrument Sans', size: 11 },
+            callback: v => '$'+(v/1000)+'K'
+          }
+        }
+      }
+    }
+  });
+})();
+
+// ── 2. Horizontal Bar: Topic Cluster × Buyer Stage
+(function() {
+  const ctx = document.getElementById('barChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Data Integration','Performance','API Strategy','Platform','ROI','Security','Migration'],
+      datasets: [
+        {
+          label: 'TOFU',
+          data: [29000, 0, 0, 0, 0, 0, 4000],
+          backgroundColor: blue,
+        },
+        {
+          label: 'MOFU',
+          data: [0, 0, 9500, 10800, 0, 7200, 0],
+          backgroundColor: '#9b59b6',
+        },
+        {
+          label: 'BOFU',
+          data: [0, 4200, 0, 0, 8100, 0, 0],
+          backgroundColor: '#2ecc71',
+        }
+      ]
+    },
+    options: {
+      ...baseOptions(),
+      indexAxis: 'y',
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            color: muted,
+            font: { family: 'Instrument Sans', size: 11 },
+            boxWidth: 12,
+            padding: 12
+          }
+        },
+        tooltip: {
+          backgroundColor: '#1a1008',
+          titleColor: '#F5E2CE',
+          bodyColor: '#DFBC94',
+          borderColor: '#DFBC94',
+          borderWidth: 1,
+        }
+      },
+      scales: {
+        x: {
+          stacked: true,
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          ticks: {
+            color: muted,
+            font: { family: 'Instrument Sans', size: 11 },
+            callback: v => v >= 1000 ? (v/1000)+'K' : v
+          }
+        },
+        y: {
+          stacked: true,
+          grid: { display: false },
+          ticks: { color: muted, font: { family: 'Instrument Sans', size: 11 } }
+        }
+      }
+    }
+  });
+})();
+
+// ── 3. Line Chart: Visibility Trends
+(function() {
+  const ctx = document.getElementById('visibilityChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: ['W9','W10','W11','W12','W13','W14'],
+      datasets: [
+        {
+          label: 'Mention Rate',
+          data: [50, 55, 57, 60, 62, 64],
+          borderColor: blue,
+          backgroundColor: 'transparent',
+          tension: 0.3,
+          pointRadius: 4,
+          pointBackgroundColor: blue,
+          yAxisID: 'y',
+        },
+        {
+          label: 'Sentiment',
+          data: [0.5, 0.55, 0.62, 0.65, 0.7, 1.0],
+          borderColor: amber,
+          backgroundColor: 'transparent',
+          tension: 0.3,
+          pointRadius: 4,
+          pointBackgroundColor: amber,
+          yAxisID: 'y2',
+        }
+      ]
+    },
+    options: {
+      ...baseOptions(),
+      plugins: {
+        legend: {
+          display: true,
+          position: 'bottom',
+          labels: {
+            color: muted,
+            font: { family: 'Instrument Sans', size: 11 },
+            boxWidth: 12,
+            padding: 12
+          }
+        },
+        tooltip: {
+          backgroundColor: '#1a1008',
+          titleColor: '#F5E2CE',
+          bodyColor: '#DFBC94',
+          borderColor: '#DFBC94',
+          borderWidth: 1,
+        }
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          ticks: { color: muted, font: { family: 'Instrument Sans', size: 11 } }
+        },
+        y: {
+          position: 'left',
+          min: 0, max: 100,
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          ticks: {
+            color: muted,
+            font: { family: 'Instrument Sans', size: 11 },
+            callback: v => v + '%'
+          }
+        },
+        y2: {
+          position: 'right',
+          min: 0, max: 1.25,
+          grid: { drawOnChartArea: false },
+          ticks: { color: muted, font: { family: 'Instrument Sans', size: 11 } }
+        }
+      }
+    }
+  });
+})();
+
+// ── 4. Donut: Share of Voice
+(function() {
+  const ctx = document.getElementById('donutChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['DataFlow (You)','Fivetran','Informatica','Talend','Others'],
+      datasets: [{
+        data: [29, 24, 19, 15, 13],
+        backgroundColor: [blue, '#6baed6', '#9b59b6', amber, sand],
+        borderColor: '#F5E2CE',
+        borderWidth: 3,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '68%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1a1008',
+          titleColor: '#F5E2CE',
+          bodyColor: '#DFBC94',
+          borderColor: '#DFBC94',
+          borderWidth: 1,
+          callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` }
+        }
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>
