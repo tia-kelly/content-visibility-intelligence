@@ -10,45 +10,50 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg:        #FFF9EB;
-    --sand:      #D9A4A9;
-    --amber:     #883E43;
-    --red:       #B53324;
-    --blue:      #88B8CE;
-    --text:      #1a1008;
-    --text-muted:#000000;
-    --border:    #1a1008;
-    --card-bg:   #FFFFFF;
-    --up:        #E5A657;
-    --down:      #B53324;
+    --charcoal:   #2A2529;
+    --ivory:      #F3F0E7;
+    --ivory-dk:   #E8E4D8;
+    --ivory-mid:  #D4CFBF;
+    --teal:       #4A9B8E;
+    --gold:       #CAD183;
+    --rose:       #C0544A;
+    --slate:      #6B8FA8;
+    --text:       #2A2529;
+    --muted:      #7A7270;
+    --border:     #2A2529;
+    --card:       #FDFCF8;
+    --up:         #3A7D5C;
+    --down:       #C0544A;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'Instrument Sans', sans-serif;
-    background: var(--bg);
+    background: var(--ivory);
     color: var(--text);
     font-size: 14px;
     min-height: 100vh;
   }
 
-  /* ── HEADER ── */
+  /* HEADER */
   header {
-    background: var(--amber);
-    color: #F5E2CE;
+    background: var(--charcoal);
+    color: var(--ivory);
     padding: 18px 32px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    border-bottom: 2px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(42,37,41,0.22);
   }
 
-  .header-left h1 {
+  .hd-left h1 {
     font-family: 'Instrument Serif', serif;
-    font-size: 26px;
+    font-size: 24px;
     font-weight: 400;
-    letter-spacing: -0.3px;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -56,55 +61,44 @@
 
   .live-badge {
     font-family: 'Instrument Sans', sans-serif;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 1px;
-    color: var(--amber);
-    background: transparent;
-    border: 1.5px solid var(--amber);
+    letter-spacing: 1.2px;
+    color: var(--teal);
+    border: 1.5px solid var(--teal);
     border-radius: 20px;
     padding: 2px 8px;
     text-transform: uppercase;
   }
 
-  .header-left p {
-    font-size: 12px;
-    color: var(--sand);
-    margin-top: 3px;
-    letter-spacing: 0.3px;
-  }
+  .hd-left p { font-size: 12px; color: var(--ivory-mid); margin-top: 3px; }
 
-  .header-right {
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 13px;
+  .hd-right {
+    font-size: 12px;
     font-weight: 600;
-    color: #F5E2CE;
-    border: 1.5px solid var(--sand);
+    color: var(--ivory);
+    border: 1.5px solid rgba(243,240,231,0.28);
     border-radius: 6px;
     padding: 6px 14px;
   }
 
-  /* ── MAIN LAYOUT ── */
-  main {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 32px 24px;
-  }
+  /* MAIN */
+  main { max-width: 1400px; margin: 0 auto; padding: 32px 24px; }
 
-  /* ── SECTION WRAPPER ── */
+  /* SECTION */
   .section {
     border: 1.5px solid var(--border);
     border-radius: 10px;
-    background: var(--red);
+    background: var(--card);
     padding: 28px;
     margin-bottom: 28px;
+    transition: box-shadow 0.2s;
   }
+  .section:hover { box-shadow: 0 4px 28px rgba(42,37,41,0.08); }
 
-  .section-header {
-    margin-bottom: 22px;
-  }
+  .sec-hd { margin-bottom: 22px; }
 
-  .section-title {
+  .sec-title {
     font-family: 'Instrument Serif', serif;
     font-size: 22px;
     font-weight: 400;
@@ -112,28 +106,21 @@
     align-items: center;
     gap: 10px;
   }
-
-  .section-title::before {
+  .sec-title::before {
     content: '';
     display: inline-block;
-    width: 4px;
-    height: 22px;
-    background: var(--amber);
+    width: 4px; height: 22px;
+    background: var(--gold);
     border-radius: 2px;
     flex-shrink: 0;
   }
 
-  .section-subtitle {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 4px;
-    margin-left: 14px;
-  }
+  .sec-sub { font-size: 12px; color: var(--muted); margin-top: 4px; margin-left: 14px; }
 
-  /* ── KPI CARDS ── */
+  /* KPI GRID */
   .kpi-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4,1fr);
     gap: 16px;
     margin-bottom: 20px;
   }
@@ -141,920 +128,663 @@
   .kpi-card {
     border: 1.5px solid var(--border);
     border-radius: 8px;
-    background: var(--bg);
+    background: var(--ivory);
     padding: 18px 20px;
-    position: relative;
+    transition: transform .15s, box-shadow .15s;
+    cursor: default;
   }
+  .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(42,37,41,0.10); }
 
-  .kpi-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    color: var(--text-muted);
+  .kpi-lbl {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--muted);
     margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
   }
+  .kpi-ico { font-size: 14px; opacity: 0.4; }
 
-  .kpi-icon {
-    font-size: 14px;
-    opacity: 0.5;
-  }
-
-  .kpi-value {
+  .kpi-val {
     font-family: 'Instrument Serif', serif;
-    font-size: 32px;
-    font-weight: 400;
-    letter-spacing: -1px;
-    line-height: 1;
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
+    font-size: 30px; font-weight: 400; letter-spacing: -1px; line-height: 1;
+    display: flex; align-items: baseline; gap: 8px;
   }
 
-  .kpi-delta {
-    font-family: 'Instrument Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-  }
+  .delta { font-family: 'Instrument Sans', sans-serif; font-size: 12px; font-weight: 700; }
+  .delta.up   { color: var(--up); }
+  .delta.down { color: var(--down); }
 
-  .kpi-delta.up   { color: var(--up); }
-  .kpi-delta.down { color: var(--down); }
+  .kpi-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
 
-  .kpi-note {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-top: 6px;
-  }
-
-  /* ── CHART ROW ── */
-  .chart-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
+  /* CHART ROW */
+  .chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
   .chart-card {
     border: 1.5px solid var(--border);
     border-radius: 8px;
-    background: var(--bg);
+    background: var(--ivory);
     padding: 20px;
   }
 
-  .chart-card-title {
-    font-family: 'Instrument Serif', serif;
-    font-size: 16px;
-    font-weight: 400;
-    margin-bottom: 2px;
-  }
+  .cc-title { font-family: 'Instrument Serif', serif; font-size: 16px; font-weight: 400; margin-bottom: 2px; }
+  .cc-sub   { font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+  .chart-wrap { position: relative; height: 220px; }
 
-  .chart-card-sub {
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-bottom: 16px;
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 16px;
   }
-
-  .chart-wrap {
-    position: relative;
-    height: 220px;
+  .fl { font-size: 11px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); margin-right: 2px; }
+  .fb {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 11px; font-weight: 600;
+    padding: 4px 12px; border-radius: 20px;
+    border: 1.5px solid var(--ivory-mid);
+    background: transparent; color: var(--muted);
+    cursor: pointer; transition: all .15s;
   }
+  .fb:hover { border-color: var(--charcoal); color: var(--charcoal); }
+  .fb.active { background: var(--charcoal); border-color: var(--charcoal); color: var(--ivory); }
 
-  /* ── TABLE ── */
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
 
-  thead tr {
-    border-bottom: 2px solid var(--border);
-  }
-
+  thead tr { border-bottom: 2px solid var(--border); }
   thead th {
-    text-align: left;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    padding: 0 12px 10px 0;
+    text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .8px;
+    text-transform: uppercase; color: var(--muted);
+    padding: 0 12px 10px 0; cursor: pointer; user-select: none; white-space: nowrap;
   }
-
+  thead th:hover { color: var(--charcoal); }
+  thead th .sa { opacity: .3; margin-left: 3px; }
+  thead th.sorted .sa { opacity: 1; }
   thead th:last-child { text-align: right; padding-right: 0; }
 
-  tbody tr {
-    border-bottom: 1px solid var(--sand);
-  }
-
+  tbody tr { border-bottom: 1px solid var(--ivory-dk); cursor: pointer; transition: background .12s; }
   tbody tr:last-child { border-bottom: none; }
+  tbody tr.data-row:hover { background: rgba(42,37,41,0.04); }
 
-  tbody td {
-    padding: 12px 12px 12px 0;
-    vertical-align: middle;
-  }
-
+  tbody td { padding: 12px 12px 12px 0; vertical-align: middle; }
   tbody td:last-child { text-align: right; padding-right: 0; }
 
+  .detail-row { display: none; background: var(--ivory-dk); }
+  .detail-row.open { display: table-row; }
+  .detail-row td { padding: 16px 20px; }
+
+  .detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px,1fr));
+    gap: 14px;
+  }
+  .di strong {
+    display: block; font-size: 10px; font-weight: 700;
+    letter-spacing: .8px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px;
+  }
+  .di span { font-size: 13px; font-weight: 500; color: var(--text); }
+
   .tag {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.6px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    border: 1.5px solid;
+    display: inline-block; font-size: 10px; font-weight: 700;
+    letter-spacing: .6px; padding: 3px 8px; border-radius: 4px; border: 1.5px solid;
   }
+  .t-case  { color: var(--teal);  border-color: var(--teal);  background: rgba(74,155,142,.10); }
+  .t-lp    { color: var(--gold);  border-color: var(--gold);  background: rgba(201,147,58,.10); }
+  .t-wp    { color: var(--slate); border-color: var(--slate); background: rgba(107,143,168,.10); }
+  .t-blog  { color: var(--muted); border-color: var(--ivory-mid); background: transparent; }
 
-  .tag-case-study  { color: var(--blue);  border-color: var(--blue);  background: rgba(136,184,206,0.12); }
-  .tag-landing-page{ color: var(--amber); border-color: var(--amber); background: rgba(229,166,87,0.12); }
-  .tag-whitepaper  { color: #9b59b6;      border-color: #9b59b6;      background: rgba(155,89,182,0.12); }
-  .tag-blog        { color: var(--blue);  border-color: var(--blue);  background: rgba(136,184,206,0.12); }
+  .up2   { color: var(--up);   font-weight: 600; }
+  .down2 { color: var(--down); font-weight: 600; }
 
-  .trend-up   { color: var(--up);   font-weight: 600; }
-  .trend-down { color: var(--down); font-weight: 600; }
-
-  /* ── AI RESPONSE LOG ── */
-  .log-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-  }
+  /* LOG */
+  .log-list { display: flex; flex-direction: column; gap: 10px; }
 
   .log-item {
-    border-bottom: 1px solid var(--sand);
-    padding: 18px 0;
+    border: 1.5px solid var(--ivory-dk);
+    border-radius: 8px; overflow: hidden;
+    transition: box-shadow .15s;
+  }
+  .log-item:hover { box-shadow: 0 3px 14px rgba(42,37,41,0.08); }
+
+  .log-hd {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 14px 18px;
+    cursor: pointer; background: var(--ivory); user-select: none;
+  }
+  .log-hd:hover { background: var(--ivory-dk); }
+
+  .log-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-y { background: var(--up); }
+  .dot-n { background: var(--down); }
+
+  .log-q {
+    font-family: 'Instrument Serif', serif; font-size: 15px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
 
-  .log-item:last-child { border-bottom: none; }
+  .log-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
-  .log-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
+  .mbadge {
+    font-size: 10px; font-weight: 700; letter-spacing: .5px;
+    padding: 3px 8px; border-radius: 4px; border: 1.5px solid;
   }
+  .m-gpt    { color: var(--teal);  border-color: var(--teal);  background: rgba(74,155,142,.10); }
+  .m-gemini { color: var(--slate); border-color: var(--slate); background: rgba(107,143,168,.10); }
+  .m-claude { color: var(--gold);  border-color: var(--gold);  background: rgba(201,147,58,.10); }
 
-  .log-prompt {
-    font-family: 'Instrument Serif', serif;
-    font-size: 15px;
-    font-weight: 400;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+  .mpill {
+    font-size: 10px; font-weight: 700; letter-spacing: .5px;
+    padding: 3px 10px; border-radius: 20px;
   }
+  .pill-y { background: rgba(58,125,92,.12);  color: var(--up); }
+  .pill-n { background: rgba(192,84,74,.12);  color: var(--down); }
 
-  .log-prompt::before {
-    content: '💬';
-    font-size: 13px;
-    opacity: 0.5;
-    flex-shrink: 0;
+  .chevron { font-size: 11px; color: var(--muted); transition: transform .2s; }
+  .log-item.open .chevron { transform: rotate(180deg); }
+
+  .log-body {
+    display: none;
+    padding: 0 18px 18px; background: var(--ivory);
+    border-top: 1px solid var(--ivory-dk);
   }
-
-  .log-meta-right {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex-shrink: 0;
-  }
-
-  .model-badge {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    padding: 3px 8px;
-    border-radius: 4px;
-    border: 1.5px solid;
-  }
-
-  .model-gpt    { color: #2d7a3a; border-color: #2d7a3a; background: rgba(45,122,58,0.1); }
-  .model-gemini { color: #5b52d8; border-color: #5b52d8; background: rgba(91,82,216,0.1); }
-  .model-claude { color: #7c4daa; border-color: #7c4daa; background: rgba(124,77,170,0.1); }
-
-  .status-icon { font-size: 16px; }
+  .log-item.open .log-body { display: block; }
 
   .log-excerpt {
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 6px;
-    margin-left: 22px;
-    line-height: 1.5;
-    font-style: italic;
+    font-size: 13px; color: var(--text); line-height: 1.65;
+    font-style: italic; padding: 14px 0 14px 14px;
+    border-bottom: 1px solid var(--ivory-dk);
+    position: relative;
+  }
+  .log-excerpt::before {
+    content: '';
+    position: absolute; left: 0; top: 14px; bottom: 14px;
+    width: 3px; background: var(--gold); border-radius: 2px;
   }
 
-  .log-stats {
-    margin-top: 6px;
-    margin-left: 22px;
-    font-size: 11px;
-    color: var(--text-muted);
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
+  .log-meta { display: flex; flex-wrap: wrap; gap: 22px; margin-top: 14px; }
+
+  .lm { display: flex; flex-direction: column; gap: 2px; }
+  .lm .lml { font-size: 10px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; color: var(--muted); }
+  .lm .lmv { font-size: 13px; font-weight: 600; color: var(--text); }
+  .lmv.rh { color: var(--up); }
+  .lmv.rm { color: var(--gold); }
+  .lmv.rl { color: var(--down); }
+
+  /* DONUT LAYOUT */
+  .donut-wrap { display: flex; align-items: center; gap: 32px; height: 220px; }
+  .donut-cvs  { width: 180px; height: 180px; flex-shrink: 0; }
+  .donut-leg  { flex: 1; }
+
+  .leg-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 5px 0; font-size: 13px;
+    border-bottom: 1px solid rgba(0,0,0,.05);
   }
+  .leg-row:last-child { border-bottom: none; }
+  .leg-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; flex-shrink: 0; }
+  .leg-name { display: flex; align-items: center; flex: 1; }
+  .leg-pct  { font-weight: 700; }
 
-  .log-stats span strong { font-weight: 700; }
-  .stat-green { color: var(--up); font-weight: 700; }
-  .stat-amber { color: #b37800; font-weight: 700; }
-  .stat-red   { color: var(--down); font-weight: 700; }
-
-  /* ── DONUT LEGEND ── */
-  .donut-wrap {
-    display: flex;
-    align-items: center;
-    gap: 32px;
-  }
-
-  .donut-chart-container {
-    width: 180px;
-    height: 180px;
-    flex-shrink: 0;
-  }
-
-  .donut-legend {
-    flex: 1;
-  }
-
-  .legend-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 5px 0;
-    font-size: 13px;
-    border-bottom: 1px solid rgba(0,0,0,0.06);
-  }
-
-  .legend-item:last-child { border-bottom: none; }
-
-  .legend-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    margin-right: 8px;
-    flex-shrink: 0;
-  }
-
-  .legend-name { display: flex; align-items: center; flex: 1; }
-  .legend-pct  { font-weight: 700; font-size: 13px; }
-
-  /* ── FOOTER ── */
+  /* FOOTER */
   footer {
-    text-align: center;
-    padding: 20px 24px;
-    font-size: 12px;
-    color: var(--text-muted);
-    border-top: 1.5px solid var(--sand);
-    margin-top: 8px;
+    text-align: center; padding: 20px 24px; font-size: 12px; color: var(--muted);
+    border-top: 1.5px solid var(--ivory-dk); margin-top: 8px;
   }
 
-  /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
     .kpi-grid  { grid-template-columns: 1fr 1fr; }
     .chart-row { grid-template-columns: 1fr; }
-    .donut-wrap { flex-direction: column; }
+    .donut-wrap { flex-direction: column; height: auto; }
   }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <header>
-  <div class="header-left">
+  <div class="hd-left">
     <h1>Content Visibility Intelligence <span class="live-badge">Live</span></h1>
     <p>Content &amp; AI Visibility Dashboard — April 2026</p>
   </div>
-  <div class="header-right">DataFlow Inc.</div>
+  <div class="hd-right">DataFlow Inc.</div>
 </header>
 
 <main>
 
-  <!-- ════════════════════════════════════════════
-       SECTION 1: Content Performance
-  ════════════════════════════════════════════ -->
+  <!-- ─────────────────────────────────────────
+       SECTION 1 · Content Performance
+  ───────────────────────────────────────── -->
   <div class="section">
-    <div class="section-header">
-      <div class="section-title">Content Performance</div>
-      <div class="section-subtitle">How is our content performing?</div>
+    <div class="sec-hd">
+      <div class="sec-title">Content Performance</div>
+      <div class="sec-sub">How is our content performing?</div>
     </div>
 
-    <!-- KPI Cards -->
     <div class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-label">Total Views <span class="kpi-icon">📄</span></div>
-        <div class="kpi-value">70.1K <span class="kpi-delta up">↑ 14.2%</span></div>
+        <div class="kpi-lbl">Total Views <span class="kpi-ico">📄</span></div>
+        <div class="kpi-val">70.1K <span class="delta up">↑ 14.2%</span></div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Avg Engagement <span class="kpi-icon">↗</span></div>
-        <div class="kpi-value">6.4% <span class="kpi-delta up">↑ 8.5%</span></div>
+        <div class="kpi-lbl">Avg Engagement <span class="kpi-ico">↗</span></div>
+        <div class="kpi-val">6.4% <span class="delta up">↑ 8.5%</span></div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Pipeline Influenced <span class="kpi-icon">$</span></div>
-        <div class="kpi-value">$3.4M <span class="kpi-delta up">↑ 32.1%</span></div>
+        <div class="kpi-lbl">Pipeline Influenced <span class="kpi-ico">$</span></div>
+        <div class="kpi-val">$3.4M <span class="delta up">↑ 32.1%</span></div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Decaying Assets <span class="kpi-icon">⚠</span></div>
-        <div class="kpi-value">3</div>
+        <div class="kpi-lbl">Decaying Assets <span class="kpi-ico">⚠</span></div>
+        <div class="kpi-val">3</div>
         <div class="kpi-note">Losing &gt;5% traffic/mo</div>
       </div>
     </div>
 
-    <!-- Charts Row -->
     <div class="chart-row">
       <div class="chart-card">
-        <div class="chart-card-title">Views &amp; Pipeline Over Time</div>
-        <div class="chart-card-sub">6-month trend</div>
-        <div class="chart-wrap">
-          <canvas id="lineChart"></canvas>
-        </div>
+        <div class="cc-title">Views &amp; Pipeline Over Time</div>
+        <div class="cc-sub">6-month trend</div>
+        <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
       </div>
       <div class="chart-card">
-        <div class="chart-card-title">Topic Cluster × Buyer Stage</div>
-        <div class="chart-card-sub">Views by stage</div>
-        <div class="chart-wrap">
-          <canvas id="barChart"></canvas>
-        </div>
+        <div class="cc-title">Topic Cluster × Buyer Stage</div>
+        <div class="cc-sub">Views by stage</div>
+        <div class="chart-wrap"><canvas id="barChart"></canvas></div>
       </div>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════════
-       SECTION 2: Content Library
-  ════════════════════════════════════════════ -->
+  <!-- ─────────────────────────────────────────
+       SECTION 2 · Content Library
+  ───────────────────────────────────────── -->
   <div class="section">
-    <div class="section-header">
-      <div class="section-title">Content Library</div>
-      <div class="section-subtitle">Sorted by pipeline influence</div>
+    <div class="sec-hd">
+      <div class="sec-title">Content Library</div>
+      <div class="sec-sub">Sorted by pipeline influence · Click a row to expand details</div>
     </div>
+
+    <div class="filter-bar">
+      <span class="fl">Stage:</span>
+      <button class="fb active" data-filter="all">All</button>
+      <button class="fb" data-filter="BOFU">BOFU</button>
+      <button class="fb" data-filter="MOFU">MOFU</button>
+      <button class="fb" data-filter="TOFU">TOFU</button>
+      <span class="fl" style="margin-left:10px">Type:</span>
+      <button class="fb" data-filter="CASE-STUDY">Case Study</button>
+      <button class="fb" data-filter="WHITEPAPER">Whitepaper</button>
+      <button class="fb" data-filter="BLOG">Blog</button>
+      <button class="fb" data-filter="LANDING-PAGE">Landing Page</button>
+    </div>
+
     <table>
       <thead>
         <tr>
-          <th>Asset</th>
-          <th>Type</th>
-          <th>Stage</th>
-          <th>Views</th>
-          <th>Trend</th>
-          <th>Engagement</th>
-          <th style="text-align:right">Pipeline</th>
+          <th data-col="asset">Asset <span class="sa">↕</span></th>
+          <th data-col="type">Type <span class="sa">↕</span></th>
+          <th data-col="stage">Stage <span class="sa">↕</span></th>
+          <th data-col="views">Views <span class="sa">↕</span></th>
+          <th data-col="trendVal">Trend <span class="sa">↕</span></th>
+          <th data-col="engagement">Engagement <span class="sa">↕</span></th>
+          <th data-col="pipeline" style="text-align:right">Pipeline <span class="sa">↕</span></th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>GlobalBank Migration Case Study</td>
-          <td><span class="tag tag-case-study">CASE-STUDY</span></td>
-          <td>BOFU</td><td>2.8K</td>
-          <td class="trend-up">↑ 45.2%</td><td>9.3%</td><td>$1200K</td>
-        </tr>
-        <tr>
-          <td>ROI Calculator for Data Platforms</td>
-          <td><span class="tag tag-landing-page">LANDING-PAGE</span></td>
-          <td>BOFU</td><td>4.7K</td>
-          <td class="trend-up">↑ 5.1%</td><td>11.2%</td><td>$890K</td>
-        </tr>
-        <tr>
-          <td>Pricing &amp; Packaging Guide</td>
-          <td><span class="tag tag-landing-page">LANDING-PAGE</span></td>
-          <td>BOFU</td><td>9.4K</td>
-          <td class="trend-down">↓ 2.3%</td><td>7.6%</td><td>$540K</td>
-        </tr>
-        <tr>
-          <td>How Acme Corp Reduced Data Latency by 73%</td>
-          <td><span class="tag tag-case-study">CASE-STUDY</span></td>
-          <td>BOFU</td><td>3.2K</td>
-          <td class="trend-up">↑ 12.5%</td><td>8.7%</td><td>$420K</td>
-        </tr>
-        <tr>
-          <td>Enterprise API Strategy Guide 2026</td>
-          <td><span class="tag tag-whitepaper">WHITEPAPER</span></td>
-          <td>MOFU</td><td>8.9K</td>
-          <td class="trend-up">↑ 22.3%</td><td>6.1%</td><td>$185K</td>
-        </tr>
-        <tr>
-          <td>Platform Comparison: Build vs. Buy</td>
-          <td><span class="tag tag-blog">BLOG</span></td>
-          <td>MOFU</td><td>6.1K</td>
-          <td class="trend-down">↓ 15.4%</td><td>3.8%</td><td>$92K</td>
-        </tr>
-        <tr>
-          <td>Security &amp; Compliance in Cloud Data</td>
-          <td><span class="tag tag-whitepaper">WHITEPAPER</span></td>
-          <td>MOFU</td><td>5.3K</td>
-          <td class="trend-up">↑ 3.7%</td><td>5.4%</td><td>$67K</td>
-        </tr>
-        <tr>
-          <td>The Future of Enterprise Data Integration</td>
-          <td><span class="tag tag-blog">BLOG</span></td>
-          <td>TOFU</td><td>12.4K</td>
-          <td class="trend-down">↓ 8.2%</td><td>4.2%</td><td>—</td>
-        </tr>
-        <tr>
-          <td>5 Signs Your Data Stack Is Holding You Back</td>
-          <td><span class="tag tag-blog">BLOG</span></td>
-          <td>TOFU</td><td>2.1K</td>
-          <td class="trend-down">↓ 32.1%</td><td>2.1%</td><td>—</td>
-        </tr>
-        <tr>
-          <td>Getting Started with Real-Time Pipelines</td>
-          <td><span class="tag tag-blog">BLOG</span></td>
-          <td>TOFU</td><td>15.2K</td>
-          <td class="trend-up">↑ 67.8%</td><td>5.8%</td><td>—</td>
-        </tr>
-      </tbody>
+      <tbody id="tBody"></tbody>
     </table>
   </div>
 
-  <!-- ════════════════════════════════════════════
-       SECTION 3: AI Search Visibility
-  ════════════════════════════════════════════ -->
+  <!-- ─────────────────────────────────────────
+       SECTION 3 · AI Search Visibility
+  ───────────────────────────────────────── -->
   <div class="section">
-    <div class="section-header">
-      <div class="section-title">AI Search Visibility</div>
-      <div class="section-subtitle">What is AI telling the market about us?</div>
+    <div class="sec-hd">
+      <div class="sec-title">AI Search Visibility</div>
+      <div class="sec-sub">What is AI telling the market about us?</div>
     </div>
 
-    <!-- KPI Cards -->
     <div class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-label">Mention Rate <span class="kpi-icon">👁</span></div>
-        <div class="kpi-value">75% <span class="kpi-delta up">↑ 11.3%</span></div>
-        <div class="kpi-note">6/8 prompts</div>
+        <div class="kpi-lbl">Mention Rate <span class="kpi-ico">👁</span></div>
+        <div class="kpi-val">75% <span class="delta up">↑ 11.3%</span></div>
+        <div class="kpi-note">6 of 8 tracked prompts</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Avg Sentiment <span class="kpi-icon">👍</span></div>
-        <div class="kpi-value">0.74 <span class="kpi-delta up">↑ 5.2%</span></div>
-        <div class="kpi-note">Scale: -1 to 1</div>
+        <div class="kpi-lbl">Overall Tone <span class="kpi-ico">👍</span></div>
+        <div class="kpi-val" style="font-size:22px">Positive</div>
+        <div class="kpi-note">Across mentions this period</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Position Accuracy <span class="kpi-icon">🎯</span></div>
-        <div class="kpi-value">80% <span class="kpi-delta up">↑ 3.8%</span></div>
-        <div class="kpi-note">Is AI describing us correctly?</div>
+        <div class="kpi-lbl">Avg Rank When Mentioned <span class="kpi-ico">🎯</span></div>
+        <div class="kpi-val">#2.4</div>
+        <div class="kpi-note">Among named competitors</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-label">Share of Voice <span class="kpi-icon">📊</span></div>
-        <div class="kpi-value">29% <span class="kpi-delta up">↑ 7.1%</span></div>
+        <div class="kpi-lbl">Share of Voice <span class="kpi-ico">📊</span></div>
+        <div class="kpi-val">29% <span class="delta up">↑ 7.1%</span></div>
         <div class="kpi-note">vs. named competitors</div>
       </div>
     </div>
 
-    <!-- Charts Row -->
     <div class="chart-row">
       <div class="chart-card">
-        <div class="chart-card-title">Visibility Trends</div>
-        <div class="chart-card-sub">Weekly mention rate &amp; sentiment</div>
-        <div class="chart-wrap">
-          <canvas id="visibilityChart"></canvas>
-        </div>
+        <div class="cc-title">Visibility Trends</div>
+        <div class="cc-sub">Weekly mention rate &amp; avg rank</div>
+        <div class="chart-wrap"><canvas id="visChart"></canvas></div>
       </div>
       <div class="chart-card">
-        <div class="chart-card-title">Share of Voice</div>
-        <div class="chart-card-sub">AI-generated mentions vs. competitors</div>
-        <div class="donut-wrap" style="height:220px">
-          <div class="donut-chart-container">
-            <canvas id="donutChart"></canvas>
-          </div>
-          <div class="donut-legend">
-            <div class="legend-item">
-              <span class="legend-name"><span class="legend-dot" style="background:#88B8CE"></span>DataFlow (You)</span>
-              <span class="legend-pct">29%</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-name"><span class="legend-dot" style="background:#6baed6"></span>Fivetran</span>
-              <span class="legend-pct">24%</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-name"><span class="legend-dot" style="background:#9b59b6"></span>Informatica</span>
-              <span class="legend-pct">19%</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-name"><span class="legend-dot" style="background:#E5A657"></span>Talend</span>
-              <span class="legend-pct">15%</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-name"><span class="legend-dot" style="background:#DFBC94"></span>Others</span>
-              <span class="legend-pct">13%</span>
-            </div>
+        <div class="cc-title">Share of Voice</div>
+        <div class="cc-sub">AI-generated mentions vs. competitors</div>
+        <div class="donut-wrap">
+          <div class="donut-cvs"><canvas id="donut"></canvas></div>
+          <div class="donut-leg">
+            <div class="leg-row"><span class="leg-name"><span class="leg-dot" style="background:#4A9B8E"></span>DataFlow (You)</span><span class="leg-pct">29%</span></div>
+            <div class="leg-row"><span class="leg-name"><span class="leg-dot" style="background:#6B8FA8"></span>Fivetran</span><span class="leg-pct">24%</span></div>
+            <div class="leg-row"><span class="leg-name"><span class="leg-dot" style="background:#C9933A"></span>Informatica</span><span class="leg-pct">19%</span></div>
+            <div class="leg-row"><span class="leg-name"><span class="leg-dot" style="background:#C0544A"></span>Talend</span><span class="leg-pct">15%</span></div>
+            <div class="leg-row"><span class="leg-name"><span class="leg-dot" style="background:#D4CFBF"></span>Others</span><span class="leg-pct">13%</span></div>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- ════════════════════════════════════════════
-       SECTION 4: AI Response Log
-  ════════════════════════════════════════════ -->
+  <!-- ─────────────────────────────────────────
+       SECTION 4 · AI Response Log
+  ───────────────────────────────────────── -->
   <div class="section">
-    <div class="section-header">
-      <div class="section-title">AI Response Log</div>
-      <div class="section-subtitle">Recent prompt submissions &amp; results</div>
+    <div class="sec-hd">
+      <div class="sec-title">AI Response Log</div>
+      <div class="sec-sub">Recent prompt submissions &amp; results · Click to expand</div>
     </div>
-
-    <div class="log-list">
-
-      <div class="log-item">
-        <div class="log-top">
-          <div class="log-prompt">What are the best enterprise data integration platforms?</div>
-          <div class="log-meta-right">
-            <span class="model-badge model-gpt">GPT-5</span>
-            <span class="status-icon">✅</span>
-          </div>
-        </div>
-        <div class="log-excerpt">...is a strong contender in enterprise data integration, known for real-time pipeline capabilities and robust security compliance...</div>
-        <div class="log-stats">
-          <span>Sentiment: <strong class="stat-green">0.82</strong></span>
-          <span>Accuracy: <strong class="stat-green">88%</strong></span>
-          <span>Rank: <strong>#2</strong></span>
-          <span>vs. Fivetran, Informatica, Talend</span>
-        </div>
-      </div>
-
-      <div class="log-item">
-        <div class="log-top">
-          <div class="log-prompt">Compare DataFlow vs Fivetran for enterprise use</div>
-          <div class="log-meta-right">
-            <span class="model-badge model-gemini">GEMINI PRO</span>
-            <span class="status-icon">✅</span>
-          </div>
-        </div>
-        <div class="log-excerpt">Both platforms offer robust ETL capabilities. DataFlow excels in real-time processing while Fivetran has broader connector coverage...</div>
-        <div class="log-stats">
-          <span>Sentiment: <strong class="stat-amber">0.65</strong></span>
-          <span>Accuracy: <strong class="stat-amber">72%</strong></span>
-          <span>vs. Fivetran</span>
-        </div>
-      </div>
-
-      <div class="log-item">
-        <div class="log-top">
-          <div class="log-prompt">Best tools for real-time data pipelines</div>
-          <div class="log-meta-right">
-            <span class="model-badge model-gpt">GPT-5</span>
-            <span class="status-icon">✅</span>
-          </div>
-        </div>
-        <div class="log-excerpt">DataFlow stands out as the leading platform for real-time data pipelines, offering sub-second latency and enterprise-grade reliability...</div>
-        <div class="log-stats">
-          <span>Sentiment: <strong class="stat-green">0.91</strong></span>
-          <span>Accuracy: <strong class="stat-green">95%</strong></span>
-          <span>Rank: <strong>#1</strong></span>
-          <span>vs. Apache Kafka, Confluent, Striim</span>
-        </div>
-      </div>
-
-      <div class="log-item">
-        <div class="log-top">
-          <div class="log-prompt">What is the most cost-effective data platform?</div>
-          <div class="log-meta-right">
-            <span class="model-badge model-claude">CLAUDE</span>
-            <span class="status-icon">❌</span>
-          </div>
-        </div>
-        <div class="log-excerpt">For cost-effectiveness, open-source solutions like Airbyte and managed services like Stitch tend to offer better pricing...</div>
-        <div class="log-stats">
-          <span>Sentiment: <strong class="stat-amber">0.45</strong></span>
-          <span>Accuracy: <strong class="stat-amber">55%</strong></span>
-        </div>
-      </div>
-
-      <div class="log-item">
-        <div class="log-top">
-          <div class="log-prompt">Enterprise data integration security features</div>
-          <div class="log-meta-right">
-            <span class="model-badge model-gemini">GEMINI PRO</span>
-            <span class="status-icon">✅</span>
-          </div>
-        </div>
-        <div class="log-excerpt">DataFlow provides SOC 2 Type II compliance, end-to-end encryption, and role-based access controls suitable for enterprise environments...</div>
-        <div class="log-stats">
-          <span>Sentiment: <strong class="stat-green">0.73</strong></span>
-          <span>Accuracy: <strong class="stat-green">80%</strong></span>
-          <span>Rank: <strong>#3</strong></span>
-          <span>vs. Informatica, IBM DataStage, Talend</span>
-        </div>
-      </div>
-
-      <div class="log-item">
-        <div class="log-top">
-          <div class="log-prompt">Best data migration tools 2026</div>
-          <div class="log-meta-right">
-            <span class="model-badge model-gpt">GPT-5</span>
-            <span class="status-icon">✅</span>
-          </div>
-        </div>
-        <div class="log-excerpt">DataFlow offers migration capabilities, though it's primarily known for its real-time integration rather than batch migration...</div>
-        <div class="log-stats">
-          <span>Sentiment: <strong class="stat-amber">0.45</strong></span>
-          <span>Accuracy: <strong class="stat-amber">55%</strong></span>
-          <span>Rank: <strong>#5</strong></span>
-          <span>vs. AWS DMS, Azure Migrate, Fivetran, Informatica</span>
-        </div>
-      </div>
-
-      <div class="log-item">
-        <div class="log-top">
-          <div class="log-prompt">Top API management platforms</div>
-          <div class="log-meta-right">
-            <span class="model-badge model-claude">CLAUDE</span>
-            <span class="status-icon">❌</span>
-          </div>
-        </div>
-        <div class="log-excerpt">For API management, dedicated platforms like Kong and Apigee dominate the market...</div>
-        <div class="log-stats">
-          <span>No rank data available</span>
-        </div>
-      </div>
-
-      <div class="log-item">
-        <div class="log-top">
-          <div class="log-prompt">DataFlow platform review</div>
-          <div class="log-meta-right">
-            <span class="model-badge model-gpt">GPT-5</span>
-            <span class="status-icon">✅</span>
-          </div>
-        </div>
-        <div class="log-excerpt">DataFlow is a comprehensive data integration platform that excels in real-time processing. Key strengths include low latency, intuitive UI...</div>
-        <div class="log-stats">
-          <span>Sentiment: <strong class="stat-green">0.88</strong></span>
-          <span>Accuracy: <strong class="stat-green">92%</strong></span>
-        </div>
-      </div>
-
-    </div>
+    <div class="log-list" id="logList"></div>
   </div>
 
 </main>
 
-<footer>
-  Mock data for demonstration purposes — Built by Tia Kelly
-</footer>
+<footer>Mock data for demonstration purposes — Built by Tia Kelly</footer>
 
 <script>
-// ── Shared palette
-const amber  = '#E5A657';
-const blue   = '#88B8CE';
-const red    = '#B53324';
-const sand   = '#DFBC94';
-const dark   = '#1a1008';
-const muted  = '#5a4030';
+// ── PALETTE
+const C = {
+  charcoal:'#2A2529', ivory:'#F3F0E7', ivoryDk:'#E8E4D8', ivoryMid:'#D4CFBF',
+  teal:'#4A9B8E', gold:'#C9933A', rose:'#C0544A', slate:'#6B8FA8',
+  muted:'#7A7270', up:'#3A7D5C', down:'#C0544A',
+};
 
-// ── Helper: default chart options
-const baseOptions = (extra = {}) => ({
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    tooltip: {
-      backgroundColor: '#1a1008',
-      titleColor: '#F5E2CE',
-      bodyColor: '#DFBC94',
-      borderColor: '#DFBC94',
-      borderWidth: 1,
-    }
-  },
-  ...extra
+const TT = {
+  backgroundColor:C.charcoal, titleColor:C.ivory,
+  bodyColor:C.ivoryMid, borderColor:C.ivoryMid, borderWidth:1, padding:10,
+};
+
+// ── TABLE DATA
+const rows = [
+  {asset:'GlobalBank Migration Case Study',          type:'CASE-STUDY',   stage:'BOFU', views:2800,  trendVal:45.2,  engagement:9.3,  pipeline:1200000},
+  {asset:'ROI Calculator for Data Platforms',        type:'LANDING-PAGE', stage:'BOFU', views:4700,  trendVal:5.1,   engagement:11.2, pipeline:890000},
+  {asset:'Pricing & Packaging Guide',                type:'LANDING-PAGE', stage:'BOFU', views:9400,  trendVal:-2.3,  engagement:7.6,  pipeline:540000},
+  {asset:'How Acme Corp Reduced Data Latency by 73%',type:'CASE-STUDY',   stage:'BOFU', views:3200,  trendVal:12.5,  engagement:8.7,  pipeline:420000},
+  {asset:'Enterprise API Strategy Guide 2026',       type:'WHITEPAPER',   stage:'MOFU', views:8900,  trendVal:22.3,  engagement:6.1,  pipeline:185000},
+  {asset:'Platform Comparison: Build vs. Buy',       type:'BLOG',         stage:'MOFU', views:6100,  trendVal:-15.4, engagement:3.8,  pipeline:92000},
+  {asset:'Security & Compliance in Cloud Data',      type:'WHITEPAPER',   stage:'MOFU', views:5300,  trendVal:3.7,   engagement:5.4,  pipeline:67000},
+  {asset:'The Future of Enterprise Data Integration',type:'BLOG',         stage:'TOFU', views:12400, trendVal:-8.2,  engagement:4.2,  pipeline:null},
+  {asset:'5 Signs Your Data Stack Is Holding You Back',type:'BLOG',       stage:'TOFU', views:2100,  trendVal:-32.1, engagement:2.1,  pipeline:null},
+  {asset:'Getting Started with Real-Time Pipelines', type:'BLOG',         stage:'TOFU', views:15200, trendVal:67.8,  engagement:5.8,  pipeline:null},
+];
+
+const tagClass = {
+  'CASE-STUDY':'t-case','LANDING-PAGE':'t-lp','WHITEPAPER':'t-wp','BLOG':'t-blog'
+};
+
+const fv = v => v >= 1000 ? (v/1000).toFixed(1)+'K' : v;
+const fp = v => v ? '$'+(v/1000).toFixed(0)+'K' : '—';
+
+let activeF = 'all', sortKey = null, sortDir = 1;
+
+function renderTable() {
+  let data = [...rows];
+  if (activeF !== 'all') data = data.filter(r => r.stage === activeF || r.type === activeF);
+  if (sortKey) {
+    data.sort((a,b) => {
+      let av = a[sortKey] ?? -Infinity, bv = b[sortKey] ?? -Infinity;
+      return typeof av === 'string' ? av.localeCompare(bv)*sortDir : (av-bv)*sortDir;
+    });
+  }
+  const tbody = document.getElementById('tBody');
+  tbody.innerHTML = '';
+  data.forEach(r => {
+    const up = r.trendVal >= 0;
+    const tr = document.createElement('tr');
+    tr.className = 'data-row';
+    tr.innerHTML = `
+      <td>${r.asset}</td>
+      <td><span class="tag ${tagClass[r.type]}">${r.type}</span></td>
+      <td>${r.stage}</td>
+      <td>${fv(r.views)}</td>
+      <td class="${up?'up2':'down2'}">${up?'↑':'↓'} ${Math.abs(r.trendVal)}%</td>
+      <td>${r.engagement}%</td>
+      <td>${fp(r.pipeline)}</td>
+    `;
+    const dr = document.createElement('tr');
+    dr.className = 'detail-row';
+    dr.innerHTML = `<td colspan="7"><div class="detail-grid">
+      <div class="di"><strong>Content Type</strong><span>${r.type}</span></div>
+      <div class="di"><strong>Buyer Stage</strong><span>${r.stage}</span></div>
+      <div class="di"><strong>Total Views</strong><span>${r.views.toLocaleString()}</span></div>
+      <div class="di"><strong>Trend (MoM)</strong><span class="${up?'up2':'down2'}">${up?'↑':'↓'} ${Math.abs(r.trendVal)}%</span></div>
+      <div class="di"><strong>Engagement Rate</strong><span>${r.engagement}%</span></div>
+      <div class="di"><strong>Pipeline Influenced</strong><span>${fp(r.pipeline)}</span></div>
+    </div></td>`;
+    tr.addEventListener('click', () => dr.classList.toggle('open'));
+    tbody.appendChild(tr);
+    tbody.appendChild(dr);
+  });
+}
+
+document.querySelectorAll('.fb').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeF = btn.dataset.filter;
+    renderTable();
+  });
 });
 
-// ── 1. Line Chart: Views & Pipeline Over Time
-(function() {
-  const labels = ['Oct','Nov','Dec','Jan','Feb','Mar'];
+document.querySelectorAll('thead th[data-col]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    sortDir = sortKey === col ? sortDir * -1 : 1;
+    sortKey = col;
+    document.querySelectorAll('thead th').forEach(h => { h.classList.remove('sorted'); h.querySelector('.sa').textContent='↕'; });
+    th.classList.add('sorted');
+    th.querySelector('.sa').textContent = sortDir === 1 ? '↑' : '↓';
+    renderTable();
+  });
+});
+
+renderTable();
+
+// ── LOG DATA (realistic structure)
+const logs = [
+  {
+    q: 'What are the best enterprise data integration platforms?',
+    model:'GPT-5', mc:'m-gpt', mentioned:true,
+    rank:'#2', rankCls:'rh', comps:'Fivetran, Informatica, Talend',
+    excerpt:'"…DataFlow is a strong contender in enterprise data integration, known for real-time pipeline capabilities and robust security compliance. Organizations running high-frequency data workloads frequently cite it alongside Fivetran…"',
+  },
+  {
+    q: 'Compare DataFlow vs Fivetran for enterprise use',
+    model:'Gemini Pro', mc:'m-gemini', mentioned:true,
+    rank:'Featured', rankCls:'rh', comps:'Fivetran',
+    excerpt:'"Both platforms offer robust ETL capabilities. DataFlow excels in real-time processing while Fivetran has broader connector coverage for SaaS sources…"',
+  },
+  {
+    q: 'Best tools for real-time data pipelines',
+    model:'GPT-5', mc:'m-gpt', mentioned:true,
+    rank:'#1', rankCls:'rh', comps:'Apache Kafka, Confluent, Striim',
+    excerpt:'"DataFlow stands out as the leading platform for real-time data pipelines, offering sub-second latency and enterprise-grade reliability at scale…"',
+  },
+  {
+    q: 'What is the most cost-effective data platform?',
+    model:'Claude', mc:'m-claude', mentioned:false,
+    rank:'Not ranked', rankCls:'rl', comps:'Airbyte, Stitch',
+    excerpt:'"For cost-effectiveness, open-source solutions like Airbyte and managed services like Stitch tend to offer better pricing for teams with limited budgets…"',
+  },
+  {
+    q: 'Enterprise data integration security features',
+    model:'Gemini Pro', mc:'m-gemini', mentioned:true,
+    rank:'#3', rankCls:'rm', comps:'Informatica, IBM DataStage, Talend',
+    excerpt:'"DataFlow provides SOC 2 Type II compliance, end-to-end encryption, and role-based access controls suitable for enterprise environments…"',
+  },
+  {
+    q: 'Best data migration tools 2026',
+    model:'GPT-5', mc:'m-gpt', mentioned:true,
+    rank:'#5', rankCls:'rl', comps:'AWS DMS, Azure Migrate, Fivetran, Informatica',
+    excerpt:'"DataFlow offers migration capabilities, though it\'s primarily known for its real-time integration rather than batch migration workflows…"',
+  },
+  {
+    q: 'Top API management platforms',
+    model:'Claude', mc:'m-claude', mentioned:false,
+    rank:'Not ranked', rankCls:'rl', comps:'Kong, Apigee',
+    excerpt:'"For API management, dedicated platforms like Kong and Apigee dominate the market. DataFlow was not referenced in this response."',
+  },
+  {
+    q: 'DataFlow platform review',
+    model:'GPT-5', mc:'m-gpt', mentioned:true,
+    rank:'Featured', rankCls:'rh', comps:'—',
+    excerpt:'"DataFlow is a comprehensive data integration platform that excels in real-time processing. Key strengths include low latency, an intuitive UI, and strong enterprise support…"',
+  },
+];
+
+function buildLog() {
+  const container = document.getElementById('logList');
+  logs.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'log-item';
+    div.innerHTML = `
+      <div class="log-hd">
+        <div class="log-left">
+          <div class="status-dot ${item.mentioned?'dot-y':'dot-n'}"></div>
+          <div class="log-q">${item.q}</div>
+        </div>
+        <div class="log-right">
+          <span class="mbadge ${item.mc}">${item.model}</span>
+          <span class="mpill ${item.mentioned?'pill-y':'pill-n'}">${item.mentioned?'Mentioned':'Not Mentioned'}</span>
+          <span class="chevron">▼</span>
+        </div>
+      </div>
+      <div class="log-body">
+        <div class="log-excerpt">${item.excerpt}</div>
+        <div class="log-meta">
+          <div class="lm"><span class="lml">AI Model</span><span class="lmv">${item.model}</span></div>
+          <div class="lm"><span class="lml">Mentioned</span><span class="lmv ${item.mentioned?'rh':'rl'}">${item.mentioned?'Yes':'No'}</span></div>
+          <div class="lm"><span class="lml">Rank in Response</span><span class="lmv ${item.rankCls}">${item.rank}</span></div>
+          <div class="lm"><span class="lml">Competitors Named</span><span class="lmv">${item.comps}</span></div>
+        </div>
+      </div>
+    `;
+    div.querySelector('.log-hd').addEventListener('click', () => div.classList.toggle('open'));
+    container.appendChild(div);
+  });
+}
+
+buildLog();
+
+// ── CHARTS
+
+// 1. Line
+(function(){
   const ctx = document.getElementById('lineChart').getContext('2d');
-
-  // Gradient for area fill
-  const grad = ctx.createLinearGradient(0, 0, 0, 220);
-  grad.addColorStop(0, 'rgba(136,184,206,0.35)');
-  grad.addColorStop(1, 'rgba(136,184,206,0)');
-
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: 'Views',
-          data: [40000, 37000, 42000, 48000, 58000, 70100],
-          borderColor: blue,
-          backgroundColor: grad,
-          fill: true,
-          tension: 0.4,
-          pointRadius: 3,
-          pointBackgroundColor: blue,
-          yAxisID: 'y',
-        },
-        {
-          label: 'Pipeline',
-          data: [200000, 280000, 420000, 650000, 900000, 1200000],
-          borderColor: amber,
-          backgroundColor: 'transparent',
-          fill: false,
-          tension: 0.4,
-          pointRadius: 3,
-          pointBackgroundColor: amber,
-          yAxisID: 'y2',
-        }
+  const g = ctx.createLinearGradient(0,0,0,220);
+  g.addColorStop(0,'rgba(74,155,142,0.25)');
+  g.addColorStop(1,'rgba(74,155,142,0)');
+  new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:['Oct','Nov','Dec','Jan','Feb','Mar'],
+      datasets:[
+        {label:'Views',data:[40000,37000,42000,48000,58000,70100],
+         borderColor:C.teal,backgroundColor:g,fill:true,tension:0.4,
+         pointRadius:4,pointBackgroundColor:C.teal,pointBorderColor:C.ivory,pointBorderWidth:2,yAxisID:'y'},
+        {label:'Pipeline $',data:[200000,280000,420000,650000,900000,1200000],
+         borderColor:C.gold,backgroundColor:'transparent',fill:false,tension:0.4,
+         pointRadius:4,pointBackgroundColor:C.gold,pointBorderColor:C.ivory,pointBorderWidth:2,yAxisID:'y2'},
       ]
     },
-    options: {
-      ...baseOptions(),
-      scales: {
-        x: {
-          grid: { color: 'rgba(0,0,0,0.06)' },
-          ticks: { color: muted, font: { family: 'Instrument Sans', size: 11 } }
-        },
-        y: {
-          position: 'left',
-          grid: { color: 'rgba(0,0,0,0.06)' },
-          ticks: {
-            color: muted,
-            font: { family: 'Instrument Sans', size: 11 },
-            callback: v => v >= 1000 ? (v/1000)+'K' : v
-          }
-        },
-        y2: {
-          position: 'right',
-          grid: { drawOnChartArea: false },
-          ticks: {
-            color: muted,
-            font: { family: 'Instrument Sans', size: 11 },
-            callback: v => '$'+(v/1000)+'K'
-          }
-        }
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'bottom',labels:{color:C.muted,font:{family:'Instrument Sans',size:11},boxWidth:12,padding:12}},tooltip:{...TT}},
+      scales:{
+        x:{grid:{color:'rgba(42,37,41,0.06)'},ticks:{color:C.muted,font:{family:'Instrument Sans',size:11}}},
+        y:{position:'left',grid:{color:'rgba(42,37,41,0.06)'},ticks:{color:C.muted,font:{family:'Instrument Sans',size:11},callback:v=>v>=1000?(v/1000)+'K':v}},
+        y2:{position:'right',grid:{drawOnChartArea:false},ticks:{color:C.muted,font:{family:'Instrument Sans',size:11},callback:v=>'$'+(v/1000)+'K'}},
       }
     }
   });
 })();
 
-// ── 2. Horizontal Bar: Topic Cluster × Buyer Stage
-(function() {
+// 2. Bar
+(function(){
   const ctx = document.getElementById('barChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Data Integration','Performance','API Strategy','Platform','ROI','Security','Migration'],
-      datasets: [
-        {
-          label: 'TOFU',
-          data: [29000, 0, 0, 0, 0, 0, 4000],
-          backgroundColor: blue,
-        },
-        {
-          label: 'MOFU',
-          data: [0, 0, 9500, 10800, 0, 7200, 0],
-          backgroundColor: '#9b59b6',
-        },
-        {
-          label: 'BOFU',
-          data: [0, 4200, 0, 0, 8100, 0, 0],
-          backgroundColor: '#2ecc71',
-        }
+  new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:['Data Integration','Performance','API Strategy','Platform','ROI','Security','Migration'],
+      datasets:[
+        {label:'TOFU',data:[29000,0,0,0,0,0,4000],backgroundColor:C.slate},
+        {label:'MOFU',data:[0,0,9500,10800,0,7200,0],backgroundColor:C.gold},
+        {label:'BOFU',data:[0,4200,0,0,8100,0,0],backgroundColor:C.teal},
       ]
     },
-    options: {
-      ...baseOptions(),
-      indexAxis: 'y',
-      plugins: {
-        legend: {
-          display: true,
-          position: 'bottom',
-          labels: {
-            color: muted,
-            font: { family: 'Instrument Sans', size: 11 },
-            boxWidth: 12,
-            padding: 12
-          }
-        },
-        tooltip: {
-          backgroundColor: '#1a1008',
-          titleColor: '#F5E2CE',
-          bodyColor: '#DFBC94',
-          borderColor: '#DFBC94',
-          borderWidth: 1,
-        }
-      },
-      scales: {
-        x: {
-          stacked: true,
-          grid: { color: 'rgba(0,0,0,0.06)' },
-          ticks: {
-            color: muted,
-            font: { family: 'Instrument Sans', size: 11 },
-            callback: v => v >= 1000 ? (v/1000)+'K' : v
-          }
-        },
-        y: {
-          stacked: true,
-          grid: { display: false },
-          ticks: { color: muted, font: { family: 'Instrument Sans', size: 11 } }
-        }
+    options:{
+      responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:true,position:'bottom',labels:{color:C.muted,font:{family:'Instrument Sans',size:11},boxWidth:12,padding:12}},tooltip:{...TT}},
+      scales:{
+        x:{stacked:true,grid:{color:'rgba(42,37,41,0.06)'},ticks:{color:C.muted,font:{family:'Instrument Sans',size:11},callback:v=>v>=1000?(v/1000)+'K':v}},
+        y:{stacked:true,grid:{display:false},ticks:{color:C.muted,font:{family:'Instrument Sans',size:11}}},
       }
     }
   });
 })();
 
-// ── 3. Line Chart: Visibility Trends
-(function() {
-  const ctx = document.getElementById('visibilityChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: ['W9','W10','W11','W12','W13','W14'],
-      datasets: [
-        {
-          label: 'Mention Rate',
-          data: [50, 55, 57, 60, 62, 64],
-          borderColor: blue,
-          backgroundColor: 'transparent',
-          tension: 0.3,
-          pointRadius: 4,
-          pointBackgroundColor: blue,
-          yAxisID: 'y',
-        },
-        {
-          label: 'Sentiment',
-          data: [0.5, 0.55, 0.62, 0.65, 0.7, 1.0],
-          borderColor: amber,
-          backgroundColor: 'transparent',
-          tension: 0.3,
-          pointRadius: 4,
-          pointBackgroundColor: amber,
-          yAxisID: 'y2',
-        }
+// 3. Visibility line
+(function(){
+  const ctx = document.getElementById('visChart').getContext('2d');
+  const g = ctx.createLinearGradient(0,0,0,220);
+  g.addColorStop(0,'rgba(74,155,142,0.18)');
+  g.addColorStop(1,'rgba(74,155,142,0)');
+  new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:['W9','W10','W11','W12','W13','W14'],
+      datasets:[
+        {label:'Mention Rate %',data:[50,55,57,60,62,64],
+         borderColor:C.teal,backgroundColor:g,fill:true,tension:0.35,
+         pointRadius:5,pointBackgroundColor:C.teal,pointBorderColor:C.ivory,pointBorderWidth:2,yAxisID:'y'},
+        {label:'Avg Rank',data:[3.2,3.0,2.8,2.6,2.5,2.4],
+         borderColor:C.gold,backgroundColor:'transparent',fill:false,tension:0.35,
+         pointRadius:5,pointBackgroundColor:C.gold,pointBorderColor:C.ivory,pointBorderWidth:2,yAxisID:'y2'},
       ]
     },
-    options: {
-      ...baseOptions(),
-      plugins: {
-        legend: {
-          display: true,
-          position: 'bottom',
-          labels: {
-            color: muted,
-            font: { family: 'Instrument Sans', size: 11 },
-            boxWidth: 12,
-            padding: 12
-          }
-        },
-        tooltip: {
-          backgroundColor: '#1a1008',
-          titleColor: '#F5E2CE',
-          bodyColor: '#DFBC94',
-          borderColor: '#DFBC94',
-          borderWidth: 1,
-        }
-      },
-      scales: {
-        x: {
-          grid: { color: 'rgba(0,0,0,0.06)' },
-          ticks: { color: muted, font: { family: 'Instrument Sans', size: 11 } }
-        },
-        y: {
-          position: 'left',
-          min: 0, max: 100,
-          grid: { color: 'rgba(0,0,0,0.06)' },
-          ticks: {
-            color: muted,
-            font: { family: 'Instrument Sans', size: 11 },
-            callback: v => v + '%'
-          }
-        },
-        y2: {
-          position: 'right',
-          min: 0, max: 1.25,
-          grid: { drawOnChartArea: false },
-          ticks: { color: muted, font: { family: 'Instrument Sans', size: 11 } }
-        }
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'bottom',labels:{color:C.muted,font:{family:'Instrument Sans',size:11},boxWidth:12,padding:12}},tooltip:{...TT}},
+      scales:{
+        x:{grid:{color:'rgba(42,37,41,0.06)'},ticks:{color:C.muted,font:{family:'Instrument Sans',size:11}}},
+        y:{min:0,max:100,grid:{color:'rgba(42,37,41,0.06)'},ticks:{color:C.muted,font:{family:'Instrument Sans',size:11},callback:v=>v+'%'}},
+        y2:{position:'right',reverse:true,min:1,max:6,grid:{drawOnChartArea:false},ticks:{color:C.muted,font:{family:'Instrument Sans',size:11},callback:v=>'#'+v}},
       }
     }
   });
 })();
 
-// ── 4. Donut: Share of Voice
-(function() {
-  const ctx = document.getElementById('donutChart').getContext('2d');
-  new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: ['DataFlow (You)','Fivetran','Informatica','Talend','Others'],
-      datasets: [{
-        data: [29, 24, 19, 15, 13],
-        backgroundColor: [blue, '#6baed6', '#9b59b6', amber, sand],
-        borderColor: '#F5E2CE',
-        borderWidth: 3,
-        hoverOffset: 6,
-      }]
+// 4. Donut
+(function(){
+  const ctx = document.getElementById('donut').getContext('2d');
+  new Chart(ctx,{
+    type:'doughnut',
+    data:{
+      labels:['DataFlow (You)','Fivetran','Informatica','Talend','Others'],
+      datasets:[{data:[29,24,19,15,13],backgroundColor:[C.teal,C.slate,C.gold,C.rose,C.ivoryMid],borderColor:C.ivory,borderWidth:3,hoverOffset:8}]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '68%',
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#1a1008',
-          titleColor: '#F5E2CE',
-          bodyColor: '#DFBC94',
-          borderColor: '#DFBC94',
-          borderWidth: 1,
-          callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` }
-        }
-      }
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:'68%',
+      plugins:{legend:{display:false},tooltip:{...TT,callbacks:{label:c=>` ${c.label}: ${c.parsed}%`}}}
     }
   });
 })();
